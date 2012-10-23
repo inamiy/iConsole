@@ -75,6 +75,7 @@ __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_7)
 //  ARC Helper ends
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MessageUI.h>
 
 
 typedef enum
@@ -95,7 +96,7 @@ iConsoleLogLevel;
 @end
 
 
-@interface iConsole : UIViewController
+@interface iConsole : UIViewController <MFMailComposeViewControllerDelegate>
 
 //enabled/disable console features
 

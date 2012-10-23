@@ -387,15 +387,37 @@ static void exceptionHandler(NSException *exception)
 	}
 	else if (buttonIndex != actionSheet.cancelButtonIndex)
 	{
-        NSMutableString *URLString = [NSMutableString stringWithFormat:@"mailto:%@?subject=%@%%20Console%%20Log&body=%@",
-                                      _logSubmissionEmail ?: @"",
-                                      [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"],
-                                      [_log componentsJoinedByString:@"%0A"]];
+        if ([MFMailComposeViewController canSendMail]) {
 
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString]];
+            NSString* subject = [NSString stringWithFormat:@"%@ (ver %@ b%@ / %@ %@)",
+                                 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"],
+                                 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+                                 [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
+                                 [UIDevice currentDevice].systemName,
+                                 [UIDevice currentDevice].systemVersion
+                                 ];
+            
+            MFMailComposeViewController *mailVC = [[MFMailComposeViewController alloc] init];
+            mailVC.mailComposeDelegate = self;
+            
+            [mailVC setToRecipients:(_logSubmissionEmail ? [NSArray arrayWithObject:_logSubmissionEmail] : nil)];
+            [mailVC setSubject:subject];
+            
+            [mailVC setMessageBody:[_log componentsJoinedByString:@"\n"] isHTML:NO];
+            
+            [self presentModalViewController:mailVC animated:YES];
+            
+        }
 	}
 }
 
+#pragma mark -
+#pragma mark MFMailComposeViewControllerDelegate
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    [self dismissModalViewControllerAnimated:YES];
+}
 
 #pragma mark -
 #pragma mark Life cycle
