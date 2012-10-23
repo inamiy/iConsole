@@ -58,13 +58,13 @@
 #pragma mark -
 #pragma mark Private methods
 
-void exceptionHandler(NSException *exception)
+static void exceptionHandler(NSException *exception)
 {
 	[iConsole crash:@"%@", exception.name];
 	[iConsole crash:@"%@", exception.reason];
 	[iConsole crash:@"%@", exception.callStackSymbols];
 
-	[[iConsole sharedConsole] saveSettings];
+	[iConsole save];
 }
 
 + (void)load
@@ -417,12 +417,7 @@ void exceptionHandler(NSException *exception)
 {
 	if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]))
 	{
-        
-#if ICONSOLE_ADD_EXCEPTION_HANDLER
-        
         NSSetUncaughtExceptionHandler(&exceptionHandler);
-        
-#endif
         
         _enabled = YES;
         _logLevel = iConsoleLogLevelInfo;
@@ -645,6 +640,11 @@ void exceptionHandler(NSException *exception)
 + (void)clear
 {
 	[[iConsole sharedConsole] resetLog];
+}
+
++ (void)save
+{
+	[[iConsole sharedConsole] saveSettings];
 }
 
 + (void)show
