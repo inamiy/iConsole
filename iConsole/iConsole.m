@@ -35,10 +35,6 @@
 #import <stdarg.h>
 #import <string.h> 
 
-#if ICONSOLE_USE_GOOGLE_STACK_TRACE
-#import "GTMStackTrace.h"
-#endif
-
 
 #define EDITFIELD_HEIGHT 28
 #define ACTION_BUTTON_WIDTH 28
@@ -64,16 +60,9 @@
 
 void exceptionHandler(NSException *exception)
 {
-	
-#if ICONSOLE_USE_GOOGLE_STACK_TRACE
-	
-    [iConsole crash:@"%@\n\nStack trace:\n%@)", exception, GTMStackTraceFromException(exception)];
-	
-#else
-	
-	[iConsole crash:@"%@", exception];
-	 
-#endif
+	[iConsole crash:@"%@", exception.name];
+	[iConsole crash:@"%@", exception.reason];
+	[iConsole crash:@"%@", exception.callStackSymbols];
 
 	[[iConsole sharedConsole] saveSettings];
 }
