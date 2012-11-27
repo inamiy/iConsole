@@ -115,6 +115,7 @@ static void exceptionHandler(NSException *exception)
 {
     if (_saveLogToDisk)
     {
+        [[NSUserDefaults standardUserDefaults] setObject:_log forKey:@"iConsoleLog"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
@@ -344,7 +345,7 @@ static void exceptionHandler(NSException *exception)
 	{
 		[_log removeObjectAtIndex:0];
 	}
-    [[NSUserDefaults standardUserDefaults] setObject:_log forKey:@"iConsoleLog"];
+    
     if (self.view.superview)
     {
         [self setConsoleText];
@@ -464,18 +465,19 @@ static void exceptionHandler(NSException *exception)
         [[NSUserDefaults standardUserDefaults] synchronize];
         self.log = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"iConsoleLog"]];
         
-        if (&UIApplicationDidEnterBackgroundNotification != NULL)
-        {
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(saveSettings)
-                                                         name:UIApplicationDidEnterBackgroundNotification
-                                                       object:nil];
-        }
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(saveSettings)
-                                                     name:UIApplicationWillTerminateNotification
-                                                   object:nil];
+        // comment-out: iConsole will not handle auto-saving
+//        if (&UIApplicationDidEnterBackgroundNotification != NULL)
+//        {
+//            [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                     selector:@selector(saveSettings)
+//                                                         name:UIApplicationDidEnterBackgroundNotification
+//                                                       object:nil];
+//        }
+//
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(saveSettings)
+//                                                     name:UIApplicationWillTerminateNotification
+//                                                   object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(rotateView:)
