@@ -89,15 +89,19 @@ static void exceptionHandler(NSException *exception)
 - (void)setConsoleText
 {
 	NSString *text = _infoString;
-	int touches = (TARGET_IPHONE_SIMULATOR ? _simulatorTouchesToShow: _deviceTouchesToShow);
-	if (touches > 0 && touches < 11)
-	{
-		text = [text stringByAppendingFormat:@"\nSwipe down with %i finger%@ to hide console", touches, (touches != 1)? @"s": @""];
-	}
-	else if (TARGET_IPHONE_SIMULATOR ? _simulatorShakeToShow: _deviceShakeToShow)
-	{
-		text = [text stringByAppendingString:@"\nShake device to hide console"];
-	}
+    
+    if ([[self mainWindow] isKindOfClass:[iConsoleWindow class]]) {
+        int touches = (TARGET_IPHONE_SIMULATOR ? _simulatorTouchesToShow: _deviceTouchesToShow);
+        if (touches > 0 && touches < 11)
+        {
+            text = [text stringByAppendingFormat:@"\nSwipe down with %i finger%@ to hide console", touches, (touches != 1)? @"s": @""];
+        }
+        else if (TARGET_IPHONE_SIMULATOR ? _simulatorShakeToShow: _deviceShakeToShow)
+        {
+            text = [text stringByAppendingString:@"\nShake device to hide console"];
+        }
+    }
+	
 	text = [text stringByAppendingString:@"\n--------------------------------------\n"];
 	text = [text stringByAppendingString:[_log componentsJoinedByString:@"\n"]];
 	_consoleView.text = text;
