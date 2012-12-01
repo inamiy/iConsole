@@ -427,19 +427,18 @@ static void exceptionHandler(NSException *exception)
         [[NSUserDefaults standardUserDefaults] synchronize];
         self.log = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"iConsoleLog"]];
         
-        // comment-out: iConsole will not handle auto-saving
-//        if (&UIApplicationDidEnterBackgroundNotification != NULL)
-//        {
-//            [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                     selector:@selector(saveSettings)
-//                                                         name:UIApplicationDidEnterBackgroundNotification
-//                                                       object:nil];
-//        }
-//
-//        [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                 selector:@selector(saveSettings)
-//                                                     name:UIApplicationWillTerminateNotification
-//                                                   object:nil];
+        if (&UIApplicationDidEnterBackgroundNotification != NULL)
+        {
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(saveSettings)
+                                                         name:UIApplicationDidEnterBackgroundNotification
+                                                       object:nil];
+        }
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(saveSettings)
+                                                     name:UIApplicationWillTerminateNotification
+                                                   object:nil];
         
 	}
 	return self;
