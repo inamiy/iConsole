@@ -33,7 +33,11 @@
 
 #import "iConsole.h"
 #import <stdarg.h>
-#import <string.h> 
+#import <string.h>
+
+#import "NimbusCore.h"
+#import "NIOverviewView.h"
+#import "NIOverviewPageView.h"
 
 
 #define EDITFIELD_HEIGHT 28
@@ -203,23 +207,19 @@ static void exceptionHandler(NSException *exception)
 }
 
 - (void)showConsole
-{	
+{
 	if (!_animating && self.view.superview == nil)
 	{
         [self setConsoleText];
         
 		[self findAndResignFirstResponder:[self mainWindow]];
-		
-		[iConsole sharedConsole].view.frame = [self offscreenFrame];
-		[[self mainWindow] addSubview:[iConsole sharedConsole].view];
-		
-		_animating = YES;
-		[UIView beginAnimations:nil context:nil];
-		[UIView setAnimationDuration:0.4];
-		[UIView setAnimationDelegate:self];
-		[UIView setAnimationDidStopSelector:@selector(consoleShown)];
-		[iConsole sharedConsole].view.frame = [self onscreenFrame];
-		[UIView commitAnimations];
+        
+        _animating = YES;
+        
+        [[self mainWindow].rootViewController presentViewController:[iConsole sharedConsole] animated:YES completion:^{
+            _animating = NO;
+            [self findAndResignFirstResponder:[self mainWindow]];
+        }];
 	}
 }
 
@@ -236,61 +236,13 @@ static void exceptionHandler(NSException *exception)
 		[self findAndResignFirstResponder:[self mainWindow]];
 		
 		_animating = YES;
-		[UIView beginAnimations:nil context:nil];
-		[UIView setAnimationDuration:0.4];
-		[UIView setAnimationDelegate:self];
-		[UIView setAnimationDidStopSelector:@selector(consoleHidden)];
-		[iConsole sharedConsole].view.frame = [self offscreenFrame];
-		[UIView commitAnimations];
+    
+    [[self mainWindow].rootViewController dismissViewControllerAnimated:YES completion:^{
+      _animating = NO;
+      [[[iConsole sharedConsole] view] removeFromSuperview];
+    }];
+    
 	}
-}
-
-- (void)consoleHidden
-{
-	_animating = NO;
-	[[[iConsole sharedConsole] view] removeFromSuperview];
-}
-
-- (void)rotateView:(NSNotification *)notification
-{
-	self.view.transform = [self viewTransform];
-	self.view.frame = [self onscreenFrame];
-	
-	if (_delegate != nil)
-	{
-		//workaround for autoresizeing glitch
-		CGRect frame = self.view.bounds;
-		frame.size.height -= EDITFIELD_HEIGHT + 10;
-		self.consoleView.frame = frame;
-	}
-}
-
-- (void)resizeView:(NSNotification *)notification
-{
-	CGRect frame = [[notification.userInfo valueForKey:UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
-	CGRect bounds = [UIScreen mainScreen].bounds;
-	switch ([UIApplication sharedApplication].statusBarOrientation)
-    {
-		case UIInterfaceOrientationPortrait:
-			bounds.origin.y += frame.size.height;
-			bounds.size.height -= frame.size.height;
-			break;
-		case UIInterfaceOrientationPortraitUpsideDown:
-			bounds.size.height -= frame.size.height;
-			break;
-		case UIInterfaceOrientationLandscapeLeft:
-			bounds.origin.x += frame.size.width;
-			bounds.size.width -= frame.size.width;
-			break;
-		case UIInterfaceOrientationLandscapeRight:
-			bounds.size.width -= frame.size.width;
-			break;
-	}
-	[UIView beginAnimations:nil context:nil];
-	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-	[UIView setAnimationDuration:0.35];
-	self.view.frame = bounds;
-	[UIView commitAnimations];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
@@ -464,8 +416,8 @@ static void exceptionHandler(NSException *exception)
         self.backgroundColor = [UIColor blackColor];
         self.textColor = [UIColor whiteColor];
         
-		[self resetLog];
-		
+        [self resetLog];
+        
         [[NSUserDefaults standardUserDefaults] synchronize];
         self.log = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"iConsoleLog"]];
         
@@ -483,33 +435,49 @@ static void exceptionHandler(NSException *exception)
 //                                                     name:UIApplicationWillTerminateNotification
 //                                                   object:nil];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(rotateView:)
-                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(resizeView:)
-                                                     name:UIApplicationWillChangeStatusBarFrameNotification
-                                                   object:nil];
 	}
 	return self;
 }
 
 - (void)viewDidLoad
 {
+    
+#ifdef DEBUG
+    // NIOverviewView (only works in DEBUG build)
+    CGRect overviewFrame = self.view.bounds;
+    overviewFrame.size.height = 60;
+    
+    NIOverviewView* overviewView = [[NIOverviewView alloc] initWithFrame:overviewFrame];
+    overviewView.backgroundColor = [UIColor clearColor];
+    
+    [overviewView addPageView:[NIOverviewMemoryPageView page]];
+    [overviewView addPageView:[NIOverviewDiskPageView page]];
+    [overviewView addPageView:[NIOverviewMemoryCachePageView page]];
+//    [overviewView addPageView:[NIOverviewConsoleLogPageView page]];
+//    [overviewView addPageView:[NIOverviewMaxLogLevelPageView page]];
+    [self.view addSubview:overviewView];
+#else
+    CGRect overviewFrame = CGRectZero;
+#endif
+    
     self.view.clipsToBounds = YES;
 	self.view.backgroundColor = _backgroundColor;
 	self.view.autoresizesSubviews = YES;
-
-	_consoleView = [[UITextView alloc] initWithFrame:self.view.bounds];
+    
+    CGRect consoleFrame = self.view.bounds;
+    consoleFrame.origin.y = overviewFrame.size.height;
+    consoleFrame.size.height = self.view.bounds.size.height-overviewFrame.size.height;
+    
+    _consoleView = [[UITextView alloc] initWithFrame:consoleFrame];
+    _consoleView.clipsToBounds = YES;
 	_consoleView.font = [UIFont fontWithName:@"Courier" size:12];
 	_consoleView.textColor = _textColor;
 	_consoleView.backgroundColor = [UIColor clearColor];
 	_consoleView.editable = NO;
 	_consoleView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    _consoleView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
 	[self setConsoleText];
-	[self.view addSubview:_consoleView];
+	[self.view insertSubview:_consoleView belowSubview:overviewView];
 	
 	self.actionButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_actionButton setTitle:@"⚙" forState:UIControlStateNormal];
@@ -539,10 +507,10 @@ static void exceptionHandler(NSException *exception)
 		_inputField.placeholder = _inputPlaceholderString;
 		_inputField.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
 		_inputField.delegate = self;
-		CGRect frame = self.view.bounds;
-		frame.size.height -= EDITFIELD_HEIGHT + 10;
-		_consoleView.frame = frame;
 		[self.view addSubview:_inputField];
+    
+		consoleFrame.size.height -= EDITFIELD_HEIGHT + 10;
+		_consoleView.frame = consoleFrame;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(keyboardWillShow:)
@@ -587,6 +555,15 @@ static void exceptionHandler(NSException *exception)
 	[super ah_dealloc];
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    return YES;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
 
 #pragma mark -
 #pragma mark Public methods
