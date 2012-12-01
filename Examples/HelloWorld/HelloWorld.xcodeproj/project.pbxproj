@@ -54,6 +54,7 @@
 		1F30C92C166A1C6800785E98 /* NIOverviewSwizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F30C906166A1C6800785E98 /* NIOverviewSwizzling.m */; };
 		1F30C92D166A1C6800785E98 /* NIOverviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F30C908166A1C6800785E98 /* NIOverviewView.m */; };
 		1F30C931166A21C400785E98 /* YIEdgePanGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F30C930166A21C400785E98 /* YIEdgePanGestureRecognizer.m */; };
+		1F30C937166A26E000785E98 /* iConsole.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1F30C936166A26E000785E98 /* iConsole.bundle */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		2899E5220DE3E06400AC0155 /* HelloWorldViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2899E5210DE3E06400AC0155 /* HelloWorldViewController.xib */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
@@ -159,6 +160,7 @@
 		1F30C908166A1C6800785E98 /* NIOverviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NIOverviewView.m; sourceTree = "<group>"; };
 		1F30C92F166A21C400785E98 /* YIEdgePanGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YIEdgePanGestureRecognizer.h; sourceTree = "<group>"; };
 		1F30C930166A21C400785E98 /* YIEdgePanGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YIEdgePanGestureRecognizer.m; sourceTree = "<group>"; };
+		1F30C936166A26E000785E98 /* iConsole.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = iConsole.bundle; sourceTree = "<group>"; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		2899E5210DE3E06400AC0155 /* HelloWorldViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HelloWorldViewController.xib; sourceTree = "<group>"; };
 		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 			children = (
 				01924570160F3098005A22BB /* iConsole.h */,
 				01924571160F3098005A22BB /* iConsole.m */,
+				1F30C936166A26E000785E98 /* iConsole.bundle */,
 			);
 			name = iConsole;
 			path = ../../iConsole;
@@ -488,6 +491,7 @@
 				01D60A7012C1612D007E5123 /* Icon@2x.png in Resources */,
 				01924574160F30A5005A22BB /* Default-568h@2x.png in Resources */,
 				1F30C925166A1C6800785E98 /* NimbusOverviewer.bundle in Resources */,
+				1F30C937166A26E000785E98 /* iConsole.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

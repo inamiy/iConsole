@@ -237,12 +237,12 @@ static void exceptionHandler(NSException *exception)
 		[self findAndResignFirstResponder:[self mainWindow]];
 		
 		_animating = YES;
-    
-    [[self mainWindow].rootViewController dismissViewControllerAnimated:YES completion:^{
-      _animating = NO;
-      [[[iConsole sharedConsole] view] removeFromSuperview];
-    }];
-    
+        
+        [[self mainWindow].rootViewController dismissViewControllerAnimated:YES completion:^{
+            _animating = NO;
+            [[[iConsole sharedConsole] view] removeFromSuperview];
+        }];
+        
 	}
 }
 
@@ -307,6 +307,11 @@ static void exceptionHandler(NSException *exception)
     {
         [self setConsoleText];
     }
+}
+
+- (void)handleCloseButton:(id)sender
+{
+    [self hideConsole];
 }
 
 #pragma mark -
@@ -478,7 +483,7 @@ static void exceptionHandler(NSException *exception)
 	_consoleView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _consoleView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
 	[self setConsoleText];
-	[self.view insertSubview:_consoleView belowSubview:overviewView];
+	[self.view insertSubview:_consoleView atIndex:0];
 	
 	self.actionButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_actionButton setTitle:@"⚙" forState:UIControlStateNormal];
@@ -523,6 +528,12 @@ static void exceptionHandler(NSException *exception)
 													 name:UIKeyboardWillHideNotification
 												   object:nil];
 	}
+    
+    UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [closeButton setImage:[UIImage imageNamed:@"iConsole.bundle/UIBlackCloseButton.png"] forState:UIControlStateNormal];
+    [closeButton addTarget:self action:@selector(handleCloseButton:) forControlEvents:UIControlEventTouchUpInside];
+    closeButton.frame = CGRectMake(0, 0, 40, 40);
+    [self.view addSubview:closeButton];
 
 	[self.consoleView scrollRangeToVisible:NSMakeRange(self.consoleView.text.length, 0)];
 }
