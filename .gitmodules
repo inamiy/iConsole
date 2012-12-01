@@ -1,0 +1,3 @@
+[submodule "Vendor/YIEdgePanGestureRecognizer"]
+	path = Vendor/YIEdgePanGestureRecognizer
+	url = https://github.com/inamiy/YIEdgePanGestureRecognizer.git

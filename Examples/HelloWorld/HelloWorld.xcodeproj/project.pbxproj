@@ -53,6 +53,7 @@
 		1F30C92B166A1C6800785E98 /* NIOverviewPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F30C904166A1C6800785E98 /* NIOverviewPageView.m */; };
 		1F30C92C166A1C6800785E98 /* NIOverviewSwizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F30C906166A1C6800785E98 /* NIOverviewSwizzling.m */; };
 		1F30C92D166A1C6800785E98 /* NIOverviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F30C908166A1C6800785E98 /* NIOverviewView.m */; };
+		1F30C931166A21C400785E98 /* YIEdgePanGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F30C930166A21C400785E98 /* YIEdgePanGestureRecognizer.m */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		2899E5220DE3E06400AC0155 /* HelloWorldViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2899E5210DE3E06400AC0155 /* HelloWorldViewController.xib */; };
 		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
@@ -156,6 +157,8 @@
 		1F30C906166A1C6800785E98 /* NIOverviewSwizzling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NIOverviewSwizzling.m; sourceTree = "<group>"; };
 		1F30C907166A1C6800785E98 /* NIOverviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NIOverviewView.h; sourceTree = "<group>"; };
 		1F30C908166A1C6800785E98 /* NIOverviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NIOverviewView.m; sourceTree = "<group>"; };
+		1F30C92F166A21C400785E98 /* YIEdgePanGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YIEdgePanGestureRecognizer.h; sourceTree = "<group>"; };
+		1F30C930166A21C400785E98 /* YIEdgePanGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YIEdgePanGestureRecognizer.m; sourceTree = "<group>"; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		2899E5210DE3E06400AC0155 /* HelloWorldViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HelloWorldViewController.xib; sourceTree = "<group>"; };
 		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
@@ -215,6 +218,7 @@
 			isa = PBXGroup;
 			children = (
 				1F30C8AD166A1C6800785E98 /* NimbusKit */,
+				1F30C92E166A21C400785E98 /* YIEdgePanGestureRecognizer */,
 			);
 			name = Vendor;
 			path = ../../Vendor;
@@ -365,6 +369,16 @@
 				1F30C908166A1C6800785E98 /* NIOverviewView.m */,
 			);
 			path = src;
+			sourceTree = "<group>";
+		};
+		1F30C92E166A21C400785E98 /* YIEdgePanGestureRecognizer */ = {
+			isa = PBXGroup;
+			children = (
+				1F30C92F166A21C400785E98 /* YIEdgePanGestureRecognizer.h */,
+				1F30C930166A21C400785E98 /* YIEdgePanGestureRecognizer.m */,
+			);
+			name = YIEdgePanGestureRecognizer;
+			path = YIEdgePanGestureRecognizer/YIEdgePanGestureRecognizer;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
@@ -524,6 +538,7 @@
 				1F30C92B166A1C6800785E98 /* NIOverviewPageView.m in Sources */,
 				1F30C92C166A1C6800785E98 /* NIOverviewSwizzling.m in Sources */,
 				1F30C92D166A1C6800785E98 /* NIOverviewView.m in Sources */,
+				1F30C931166A21C400785E98 /* YIEdgePanGestureRecognizer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

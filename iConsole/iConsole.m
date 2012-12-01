@@ -38,6 +38,7 @@
 #import "NimbusCore.h"
 #import "NIOverviewView.h"
 #import "NIOverviewPageView.h"
+#import "YIEdgePanGestureRecognizer.h"
 
 
 #define EDITFIELD_HEIGHT 28
@@ -666,6 +667,39 @@ static void exceptionHandler(NSException *exception)
 
 
 @implementation iConsoleWindow
+
+- (void)setRootViewController:(UIViewController *)rootViewController
+{
+    // remove gesture from old viewController
+    for (UIGestureRecognizer* gesture in self.rootViewController.view.gestureRecognizers) {
+        if ([gesture isKindOfClass:[YIEdgePanGestureRecognizer class]]) {
+            [self.rootViewController.view removeGestureRecognizer:gesture];
+            break;
+        }
+    }
+    
+    [super setRootViewController:rootViewController];
+    
+    YIEdgePanGestureRecognizer* edgePanGesture = [[YIEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(handleEdgePanGesture:)];
+    edgePanGesture.edgeInsets = UIEdgeInsetsMake(0, 0, 20, 0);
+    [self.rootViewController.view addGestureRecognizer:edgePanGesture];
+}
+
+- (void)handleEdgePanGesture:(YIEdgePanGestureRecognizer*)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateBegan) {
+        
+        if ([iConsole sharedConsole].view.superview == nil)
+        {
+            [iConsole show];
+        }
+        else
+        {
+            [iConsole hide];
+        }
+        
+    }
+}
 
 - (void)sendEvent:(UIEvent *)event
 {
