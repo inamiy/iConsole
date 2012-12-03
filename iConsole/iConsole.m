@@ -45,8 +45,12 @@
 #define ACTION_BUTTON_WIDTH 28
 
 
+@class NIOverviewView;
+
+
 @interface iConsole() <UITextFieldDelegate, UIActionSheetDelegate>
 
+@property (nonatomic, strong) NIOverviewView* overviewView;
 @property (nonatomic, strong) UITextView *consoleView;
 @property (nonatomic, strong) UITextField *inputField;
 @property (nonatomic, strong) UIButton *actionButton;
@@ -215,12 +219,16 @@ static void exceptionHandler(NSException *exception)
         
 		[self findAndResignFirstResponder:[self mainWindow]];
         
-        _animating = YES;
+        [iConsole sharedConsole].view.frame = [self offscreenFrame];
+        [[self mainWindow] addSubview:[iConsole sharedConsole].view];
         
-        [[self mainWindow].rootViewController presentViewController:[iConsole sharedConsole] animated:YES completion:^{
-            _animating = NO;
-            [self findAndResignFirstResponder:[self mainWindow]];
-        }];
+        _animating = YES;
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.4];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDidStopSelector:@selector(consoleShown)];
+        [iConsole sharedConsole].view.frame = [self onscreenFrame];
+        [UIView commitAnimations];
 	}
 }
 
@@ -237,13 +245,71 @@ static void exceptionHandler(NSException *exception)
 		[self findAndResignFirstResponder:[self mainWindow]];
 		
 		_animating = YES;
-        
-        [[self mainWindow].rootViewController dismissViewControllerAnimated:YES completion:^{
-            _animating = NO;
-            [[[iConsole sharedConsole] view] removeFromSuperview];
-        }];
-        
-	}
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:0.4];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDidStopSelector:@selector(consoleHidden)];
+        [iConsole sharedConsole].view.frame = [self offscreenFrame];
+        [UIView commitAnimations];
+    }
+}
+
+- (void)consoleHidden
+{
+    _animating = NO;
+    [[[iConsole sharedConsole] view] removeFromSuperview];
+}
+
+- (void)rotateView:(NSNotification *)notification
+{
+    self.view.transform = [self viewTransform];
+    self.view.frame = [self onscreenFrame];
+    
+    CGRect consoleFrame = self.view.bounds;
+    consoleFrame.origin.y = _overviewView.bounds.size.height;
+    consoleFrame.size.height = self.view.bounds.size.height-_overviewView.bounds.size.height;
+    
+    if (_delegate != nil)
+    {
+        //workaround for autoresizeing glitch
+        consoleFrame.size.height -= EDITFIELD_HEIGHT + 10;
+    }
+    
+    self.consoleView.frame = consoleFrame;
+}
+
+- (void)resizeView:(NSNotification *)notification
+{
+    CGRect frame = [[notification.userInfo valueForKey:UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
+    CGRect bounds = [UIScreen mainScreen].bounds;
+    switch ([UIApplication sharedApplication].statusBarOrientation)
+    {
+        case UIInterfaceOrientationPortrait:
+            bounds.origin.y += frame.size.height;
+            bounds.size.height -= frame.size.height;
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            bounds.size.height -= frame.size.height;
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            bounds.origin.x += frame.size.width;
+            bounds.size.width -= frame.size.width;
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            bounds.size.width -= frame.size.width;
+            break;
+            
+            [[self mainWindow].rootViewController dismissViewControllerAnimated:YES completion:^{
+                _animating = NO;
+                [[[iConsole sharedConsole] view] removeFromSuperview];
+            }];
+            
+    }
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+    [UIView setAnimationDuration:0.35];
+    self.view.frame = bounds;
+    [UIView commitAnimations];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
@@ -440,6 +506,16 @@ static void exceptionHandler(NSException *exception)
                                                      name:UIApplicationWillTerminateNotification
                                                    object:nil];
         
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(rotateView:)
+                                                     name:UIApplicationDidChangeStatusBarOrientationNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(resizeView:)
+                                                     name:UIApplicationWillChangeStatusBarFrameNotification
+                                                   object:nil];
+        
 	}
 	return self;
 }
@@ -452,17 +528,15 @@ static void exceptionHandler(NSException *exception)
     CGRect overviewFrame = self.view.bounds;
     overviewFrame.size.height = 60;
     
-    NIOverviewView* overviewView = [[NIOverviewView alloc] initWithFrame:overviewFrame];
-    overviewView.backgroundColor = [UIColor clearColor];
+    _overviewView = [[NIOverviewView alloc] initWithFrame:overviewFrame];
+    _overviewView.backgroundColor = [UIColor clearColor];
     
-    [overviewView addPageView:[NIOverviewMemoryPageView page]];
-    [overviewView addPageView:[NIOverviewDiskPageView page]];
-    [overviewView addPageView:[NIOverviewMemoryCachePageView page]];
-//    [overviewView addPageView:[NIOverviewConsoleLogPageView page]];
-//    [overviewView addPageView:[NIOverviewMaxLogLevelPageView page]];
-    [self.view addSubview:overviewView];
-#else
-    CGRect overviewFrame = CGRectZero;
+    [_overviewView addPageView:[NIOverviewMemoryPageView page]];
+    [_overviewView addPageView:[NIOverviewDiskPageView page]];
+    [_overviewView addPageView:[NIOverviewMemoryCachePageView page]];
+//    [_overviewView addPageView:[NIOverviewConsoleLogPageView page]];
+//    [_overviewView addPageView:[NIOverviewMaxLogLevelPageView page]];
+    [self.view addSubview:_overviewView];
 #endif
     
     self.view.clipsToBounds = YES;
@@ -470,8 +544,8 @@ static void exceptionHandler(NSException *exception)
 	self.view.autoresizesSubviews = YES;
     
     CGRect consoleFrame = self.view.bounds;
-    consoleFrame.origin.y = overviewFrame.size.height;
-    consoleFrame.size.height = self.view.bounds.size.height-overviewFrame.size.height;
+    consoleFrame.origin.y = _overviewView.bounds.size.height;
+    consoleFrame.size.height = self.view.bounds.size.height-_overviewView.bounds.size.height;
     
     _consoleView = [[UITextView alloc] initWithFrame:consoleFrame];
     _consoleView.clipsToBounds = YES;
