@@ -520,7 +520,7 @@ static void exceptionHandler(NSException *exception)
 - (void)viewDidLoad
 {
     
-#ifdef DEBUG
+#if defined(DEBUG) || defined(NI_DEBUG)
     // NIOverviewView (only works in DEBUG build)
     CGRect overviewFrame = self.view.bounds;
     overviewFrame.size.height = 60;
