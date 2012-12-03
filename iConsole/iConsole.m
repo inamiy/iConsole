@@ -45,12 +45,9 @@
 #define ACTION_BUTTON_WIDTH 28
 
 
-@class NIOverviewView;
-
-
 @interface iConsole() <UITextFieldDelegate, UIActionSheetDelegate>
 
-@property (nonatomic, strong) NIOverviewView* overviewView;
+@property (nonatomic, strong) UIView* overviewView;
 @property (nonatomic, strong) UITextView *consoleView;
 @property (nonatomic, strong) UITextField *inputField;
 @property (nonatomic, strong) UIButton *actionButton;
@@ -528,15 +525,17 @@ static void exceptionHandler(NSException *exception)
     CGRect overviewFrame = self.view.bounds;
     overviewFrame.size.height = 60;
     
-    _overviewView = [[NIOverviewView alloc] initWithFrame:overviewFrame];
-    _overviewView.backgroundColor = [UIColor clearColor];
+    NIOverviewView* overviewView = [[NIOverviewView alloc] initWithFrame:overviewFrame];
+    overviewView.backgroundColor = [UIColor clearColor];
     
-    [_overviewView addPageView:[NIOverviewMemoryPageView page]];
-    [_overviewView addPageView:[NIOverviewDiskPageView page]];
-    [_overviewView addPageView:[NIOverviewMemoryCachePageView page]];
-//    [_overviewView addPageView:[NIOverviewConsoleLogPageView page]];
-//    [_overviewView addPageView:[NIOverviewMaxLogLevelPageView page]];
-    [self.view addSubview:_overviewView];
+    [overviewView addPageView:[NIOverviewMemoryPageView page]];
+    [overviewView addPageView:[NIOverviewDiskPageView page]];
+    [overviewView addPageView:[NIOverviewMemoryCachePageView page]];
+//    [overviewView addPageView:[NIOverviewConsoleLogPageView page]];
+//    [overviewView addPageView:[NIOverviewMaxLogLevelPageView page]];
+    [self.view addSubview:overviewView];
+    
+    _overviewView = overviewView;
 #endif
     
     self.view.clipsToBounds = YES;
