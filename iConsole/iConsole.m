@@ -655,7 +655,6 @@ static void exceptionHandler(NSException *exception)
 + (void)log:(NSString *)format arguments:(va_list)argList
 {	
 	NSString *message = [[[NSString alloc] initWithFormat:format arguments:argList] autorelease];
-	NSLog(@"%@", message);
 	
     if ([self sharedConsole].enabled)
     {
